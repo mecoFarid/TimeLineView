@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+  <declare-styleable name="TimelineView">
+    <attr name="lineStroke" format="dimension"/>
+    <attr name="activeLineColor" format="color"/>
+    <attr name="inActiveLineColor" format="color"/>
+    <attr name="activeMarkerColor" format="color"/>
+    <attr name="activeMarkerInnerRadius" format="dimension"/>
+    <attr name="activeMarkerRingInnerRadius" format="dimension"/>
+    <attr name="activeMarkerRingStroke" format="dimension"/>
+    <attr name="inactiveMarkerInnerRadius" format="dimension"/>
+    <attr name="inactiveMarkerRingStroke" format="dimension"/>
+    <attr name="inactiveMarkerColor" format="color"/>
+    <attr name="markerTopSpacing" format="dimension"/>
+    <attr name="animationDuration" format="integer"/>
+  </declare-styleable>
+</resources>

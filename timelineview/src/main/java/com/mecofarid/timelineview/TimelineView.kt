@@ -2,6 +2,7 @@ package com.mecofarid.timelineview
 
 import android.animation.ValueAnimator
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
@@ -12,52 +13,100 @@ import android.view.View
 import android.view.animation.LinearInterpolator
 import androidx.core.animation.doOnEnd
 
-private const val LINE_WIDTH = 5f
-private const val INACTIVE_LINE_ALPHA = 40
-private const val ACTIVE_LINE_ALPHA = 100
-private const val ANIMATION_DURATION =  500L
+private const val LINE_STROKE = 5f
+private const val ANIMATION_DURATION =  250
 private const val MARKER_START_SPACING = 100f
-private const val INACTIVE_MARKER_RADIUS = 15f
-private const val ACTIVE_MARKER_OUTER_RADIUS = 20f
-private const val ACTIVE_MARKER_INNER_RADIUS = 10f
+private const val INACTIVE_MARKER_INNER_RADIUS = 15f
+private const val ACTIVE_MARKER_INNER_RADIUS = 15f
+private const val ACTIVE_MARKER_RING_INNER_RADIUS = 25f
 
 class TimelineView(
-  context: Context?,
-  attrs: AttributeSet?
+  context: Context,
+  attrs: AttributeSet?,
+
 ) : View(context, attrs) {
 
-  private val linePaint = lazy {
-    Paint(ANTI_ALIAS_FLAG).apply {
-      strokeWidth = LINE_WIDTH
-      style = Paint.Style.STROKE
-    }
-  }
-  private val markerPaint = lazy { Paint(ANTI_ALIAS_FLAG) }
+  private val activeLinePaint = Paint(ANTI_ALIAS_FLAG)
+  private val inactiveLinePaint = Paint(ANTI_ALIAS_FLAG)
+  private val markerPaint = Paint(ANTI_ALIAS_FLAG)
   private var horizontalCenter = 0f
   private var activeLineEndPoint = 0f
     set(value) {
       field = value
       postInvalidateOnAnimation()
     }
-  private lateinit var type: Type
-  private lateinit var state: State
+  private var type: Type = Type.START
+  private var state: State = State.INACTIVE
   private var viewLength: Float = 0f
-  private val inactiveStateMarkerCenter = lazy {
-    PointF(
-      horizontalCenter,
-      MARKER_START_SPACING + INACTIVE_MARKER_RADIUS
-    )
-  }
-  private val activeStateMarkerCenter = lazy {
-    PointF(
-      horizontalCenter,
-      MARKER_START_SPACING + ACTIVE_MARKER_OUTER_RADIUS
-    )
-  }
   private var animationEnded = false
+  private var markerStartSpacing = MARKER_START_SPACING
+  private var animationDuration = ANIMATION_DURATION
+
+  // Active marker
+  private val activeMarkerCenter = lazy { PointF(horizontalCenter, markerStartSpacing + activeMarkerRingInnerRadius) }
+  private var activeMarkerColor: Int = Color.BLUE
+  private var activeMarkerInnerRadius: Float = ACTIVE_MARKER_INNER_RADIUS
+  private var activeMarkerRingInnerRadius: Float = ACTIVE_MARKER_RING_INNER_RADIUS
+  private var activeMarkerRingStroke: Float = LINE_STROKE
+
+  // InActive marker
+  private val inactiveMarkerCenter = lazy { PointF(horizontalCenter, markerStartSpacing + inactiveMarkerInnerRadius) }
+  private var inactiveMarkerColor = Color.GRAY
+  private var inactiveMarkerInnerRadius = INACTIVE_MARKER_INNER_RADIUS
+  private var inactiveMarkerRingStroke: Float = LINE_STROKE
+
+  init {
+    val styleSet = context.obtainStyledAttributes(attrs, R.styleable.TimelineView)
+    initActiveLinePaint(styleSet)
+    initInactiveLinePaint(styleSet)
+    initMarkers(styleSet)
+    initAnimationValues(styleSet)
+    styleSet.recycle()
+  }
+
+  private fun initActiveLinePaint(styleSet: TypedArray){
+    activeLinePaint.apply {
+      strokeWidth = styleSet.getDimension(R.styleable.TimelineView_lineStroke, LINE_STROKE)
+      style = Paint.Style.STROKE
+      color = styleSet.getColor(R.styleable.TimelineView_activeLineColor, Color.BLUE)
+    }
+  }
+
+  private fun initInactiveLinePaint(styleSet: TypedArray){
+    inactiveLinePaint.apply {
+      strokeWidth = styleSet.getDimension(R.styleable.TimelineView_lineStroke, LINE_STROKE)
+      style = Paint.Style.STROKE
+      color = styleSet.getColor(R.styleable.TimelineView_inActiveLineColor, Color.GRAY)
+    }
+  }
+
+  private fun initMarkers(styleSet: TypedArray){
+    markerStartSpacing = styleSet.getDimension(R.styleable.TimelineView_markerTopSpacing, MARKER_START_SPACING)
+    initActiveMarkerStyle(styleSet)
+    initInactiveMarkerStyle(styleSet)
+  }
+
+  private fun initActiveMarkerStyle(styleSet: TypedArray){
+    activeMarkerColor = styleSet.getColor(R.styleable.TimelineView_activeMarkerColor, Color.BLUE)
+    activeMarkerInnerRadius = styleSet.getDimension(R.styleable.TimelineView_activeMarkerInnerRadius, ACTIVE_MARKER_INNER_RADIUS)
+    activeMarkerRingInnerRadius = styleSet.getDimension(R.styleable.TimelineView_activeMarkerRingInnerRadius, ACTIVE_MARKER_RING_INNER_RADIUS)
+    activeMarkerRingStroke = styleSet.getDimension(R.styleable.TimelineView_activeMarkerRingStroke, LINE_STROKE)
+
+  }
+
+  private fun initInactiveMarkerStyle(styleSet: TypedArray){
+    inactiveMarkerColor = styleSet.getColor(R.styleable.TimelineView_inactiveMarkerColor, Color.GRAY)
+    inactiveMarkerInnerRadius = styleSet.getDimension(R.styleable.TimelineView_inactiveMarkerInnerRadius, INACTIVE_MARKER_INNER_RADIUS)
+    inactiveMarkerRingStroke = styleSet.getDimension(R.styleable.TimelineView_inactiveMarkerRingStroke, LINE_STROKE)
+  }
+
+  private fun initAnimationValues(styleSet: TypedArray){
+    animationDuration = styleSet.getInteger(R.styleable.TimelineView_animationDuration, ANIMATION_DURATION)
+  }
 
   fun setState(state: State) {
     this.state = state
+    restartAnimation()
   }
 
   fun setType(type: Type) {
@@ -67,6 +116,12 @@ class TimelineView(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     viewLength = h.toFloat()
     horizontalCenter = w / 2f
+    startAnimation()
+  }
+
+  private fun restartAnimation(){
+    animationEnded = false
+    postInvalidateOnAnimation()
     startAnimation()
   }
 
@@ -86,7 +141,7 @@ class TimelineView(
     when (state) {
       State.INACTIVE,
       State.STEP_IN,
-      State.STEP_OUT -> ANIMATION_DURATION
+      State.STEP_OUT -> animationDuration.toLong()
       State.STEP_IN_FINISHED,
       State.STEP_OUT_FINISHED -> 0
     }
@@ -108,7 +163,7 @@ class TimelineView(
 
   private fun getLineToMarkerInitialLength(): Float =
     when (type) {
-      Type.START -> MARKER_START_SPACING
+      Type.START -> markerStartSpacing
       Type.MIDDLE,
       Type.END -> 0f
     }
@@ -117,7 +172,7 @@ class TimelineView(
     when (type) {
       Type.START,
       Type.MIDDLE,
-      Type.END -> MARKER_START_SPACING
+      Type.END -> markerStartSpacing
     }
 
   private fun getLineFinalLength(): Float =
@@ -133,7 +188,7 @@ class TimelineView(
     return when (type) {
       Type.START,
       Type.MIDDLE,
-      Type.END -> MARKER_START_SPACING + getMarkerOuterDiameter()
+      Type.END -> markerStartSpacing + getMarkerOuterDiameter()
     }
   }
 
@@ -141,7 +196,7 @@ class TimelineView(
     return when (type) {
       Type.START,
       Type.MIDDLE -> viewLength
-      Type.END -> MARKER_START_SPACING + getMarkerOuterDiameter()
+      Type.END -> markerStartSpacing + getMarkerOuterDiameter()
     }
   }
 
@@ -149,9 +204,9 @@ class TimelineView(
 
   private fun getMarkerOuterRadius(): Float =
     if (state == State.INACTIVE)
-      INACTIVE_MARKER_RADIUS
+      inactiveMarkerInnerRadius
     else
-      ACTIVE_MARKER_OUTER_RADIUS
+      activeMarkerRingInnerRadius
 
   override fun onDraw(canvas: Canvas) {
     super.onDraw(canvas)
@@ -175,9 +230,8 @@ class TimelineView(
   }
 
   private fun Canvas.drawActiveLine() {
-    linePaintAsActiveState()
-    linePaint.value.also {
-      drawHorizontalCenteredLine(getLineInitialLength(), activeLineEndPoint, linePaint.value)
+    activeLinePaint.also {
+      drawHorizontalCenteredLine(getLineInitialLength(), activeLineEndPoint, paint = it)
       if (isActiveMarkerEnabled()) {
         drawHorizontalCenteredLine(getLineToMarkerInitialLength(), getLineToMarkerFinalLength(), paint = it)
       }
@@ -185,8 +239,7 @@ class TimelineView(
   }
 
   private fun Canvas.drawInactiveLine() {
-    linePaintAsInactiveState()
-    linePaint.value.also {
+    inactiveLinePaint.also {
       drawHorizontalCenteredLine(getLineToMarkerInitialLength(), getLineToMarkerFinalLength(), paint = it)
       drawHorizontalCenteredLine(getLineFromMarkerInitialLength(), getLineFromMarkerFinalLength(), paint = it)
     }
@@ -194,19 +247,19 @@ class TimelineView(
 
   private fun Canvas.drawActiveStateMarker() {
     markerPaintAsActiveStateInnerRadius()
-    activeStateMarkerCenter.value.apply {
-      drawCircle(x, y, ACTIVE_MARKER_INNER_RADIUS, markerPaint.value)
+    activeMarkerCenter.value.apply {
+      drawCircle(x, y, activeMarkerInnerRadius, markerPaint)
     }
     markerPaintAsActiveStateOuterRadius()
-    activeStateMarkerCenter.value.apply {
-      drawCircle(x, y, ACTIVE_MARKER_OUTER_RADIUS, markerPaint.value)
+    activeMarkerCenter.value.apply {
+      drawCircle(x, y, activeMarkerRingInnerRadius, markerPaint)
     }
   }
 
   private fun Canvas.drawInactiveStateMarker() {
     markerPaintAsInactiveState()
-    inactiveStateMarkerCenter.value.apply {
-      drawCircle(x, y, INACTIVE_MARKER_RADIUS, markerPaint.value)
+    inactiveMarkerCenter.value.apply {
+      drawCircle(x, y, inactiveMarkerInnerRadius, markerPaint)
     }
   }
 
@@ -214,43 +267,29 @@ class TimelineView(
 
   private fun isActiveMarkerEnabled() = animationEnded || state == State.STEP_IN_FINISHED || isOutState()
 
-//  private fun isTypeMiddleAndOutState() = type == Type.MIDDLE && isOutState()
-
   private fun isOutState() = state == State.STEP_OUT || state == State.STEP_OUT_FINISHED
 
   private fun Canvas.drawHorizontalCenteredLine(startY: Float, stopY: Float, paint: Paint) =
     drawLine(horizontalCenter, startY, horizontalCenter, stopY, paint)
 
-  private fun linePaintAsActiveState() =
-    linePaint.value.apply {
-      color = Color.BLUE
-      alpha = ACTIVE_LINE_ALPHA
-    }
-
-  private fun linePaintAsInactiveState() =
-    linePaint.value.apply {
-      color = Color.GRAY
-      alpha = INACTIVE_LINE_ALPHA
-    }
-
   private fun markerPaintAsInactiveState() =
-    markerPaint.value.apply {
-      color = Color.GRAY
+    markerPaint.apply {
+      color = inactiveMarkerColor
       style = Paint.Style.STROKE
-      strokeWidth = LINE_WIDTH
+      strokeWidth = inactiveMarkerRingStroke
     }
 
   private fun markerPaintAsActiveStateInnerRadius() =
-    markerPaint.value.apply {
-      color = Color.BLUE
+    markerPaint.apply {
+      color = activeMarkerColor
       style = Paint.Style.FILL
     }
 
   private fun markerPaintAsActiveStateOuterRadius() =
-    markerPaint.value.apply {
-      color = Color.BLUE
+    markerPaint.apply {
+      color = activeMarkerColor
       style = Paint.Style.STROKE
-      strokeWidth = LINE_WIDTH
+      strokeWidth = activeMarkerRingStroke
     }
 
   enum class State {

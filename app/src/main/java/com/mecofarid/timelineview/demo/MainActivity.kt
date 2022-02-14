@@ -17,14 +17,25 @@ class MainActivity : AppCompatActivity() {
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
 
-    binding.fab.setOnClickListener { view ->
-      Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-        .setAction("Action", null).show()
+    val typeStatePairList = mutableListOf<Pair<TimelineView.Type, TimelineView.State>>()
+    for (type in TimelineView.Type.values()) {
+      for (state in TimelineView.State.values()) {
+        typeStatePairList.add(Pair(type, state))
+      }
     }
 
+    var clickCount = 0
+    binding.fab.setOnClickListener { view ->
+      if (clickCount >= 15){
+        clickCount = 0
+      }
 
-    Log.d("TAG", "onSizeChanged:b")
-    binding.timeline.setType(TimelineView.Type.END)
-    binding.timeline.setState(TimelineView.State.INACTIVE)
+      val pair = typeStatePairList[clickCount]
+      binding.timeline.setType(pair.first)
+      binding.timeline.setState(pair.second)
+      binding.state.text = "${pair.first.name} - ${pair.second.name}"
+
+      clickCount++
+    }
   }
 }
