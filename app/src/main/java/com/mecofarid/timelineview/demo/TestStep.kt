@@ -1,4 +1,7 @@
 package com.mecofarid.timelineview.demo
 
-open class TestStep {
-}
+import com.mecofarid.timelineview.TimelineView
+
+open class TestStep(
+  val pair: Pair<TimelineView.Type, TimelineView.State>
+)

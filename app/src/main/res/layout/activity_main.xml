@@ -7,36 +7,11 @@
   tools:context=".MainActivity">
 
   <androidx.recyclerview.widget.RecyclerView
-    android:visibility="gone"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"/>
-
-  <com.mecofarid.timelineview.TimelineView
     android:id="@+id/timeline"
-    android:layout_width="100dp"
-    android:layout_height="300dp"
-    app:lineStroke="2dp"
-    app:activeLineColor="#0089CA"
-    app:inActiveLineColor="#E3E4E4"
-    app:activeMarkerColor="#0089CA"
-    app:activeMarkerInnerRadius="4dp"
-    app:activeMarkerRingInnerRadius="7dp"
-    app:activeMarkerRingStroke="2dp"
-    app:inactiveMarkerInnerRadius="6dp"
-    app:inactiveMarkerRingStroke="2dp"
-    app:inactiveMarkerColor="#E3E4E4"
-    app:markerTopSpacing="20dp"
-    app:animationDuration="250" />
-
-  <TextView
-    android:id="@+id/state"
-    android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    app:layout_anchor="@id/timeline"
-    app:layout_anchorGravity="end"
-    android:layout_gravity="end"
-    android:layout_marginTop="20dp"
-    tools:text="Some text"/>
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+    tools:listitem="@layout/demo_test_step_view"/>
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/fab"

@@ -18,24 +18,17 @@ class MainActivity : AppCompatActivity() {
     setContentView(binding.root)
 
     val typeStatePairList = mutableListOf<Pair<TimelineView.Type, TimelineView.State>>()
-    for (type in TimelineView.Type.values()) {
-      for (state in TimelineView.State.values()) {
-        typeStatePairList.add(Pair(type, state))
-      }
+    typeStatePairList.add(Pair(TimelineView.Type.START, TimelineView.State.STEP_OUT_FINISHED))
+    typeStatePairList.add(Pair(TimelineView.Type.MIDDLE, TimelineView.State.STEP_IN_FINISHED))
+    typeStatePairList.add(Pair(TimelineView.Type.END, TimelineView.State.INACTIVE))
+
+
+    val itemViewList = mutableListOf<TestStepView<*, * ,*>>()
+    typeStatePairList.forEach {
+      itemViewList.add(DemoTestStepView(DemoTestStep(inputPair = it)))
     }
-
-    var clickCount = 0
-    binding.fab.setOnClickListener { view ->
-      if (clickCount >= 15){
-        clickCount = 0
-      }
-
-      val pair = typeStatePairList[clickCount]
-      binding.timeline.setType(pair.first)
-      binding.timeline.setState(pair.second)
-      binding.state.text = "${pair.first.name} - ${pair.second.name}"
-
-      clickCount++
-    }
+    val adapter = TestStepAdapter(this)
+    binding.timeline.adapter = adapter
+    adapter.updateDataSet(itemViewList)
   }
 }
