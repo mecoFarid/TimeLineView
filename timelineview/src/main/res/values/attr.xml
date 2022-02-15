@@ -12,6 +12,7 @@
     <attr name="inactiveMarkerRingStroke" format="dimension"/>
     <attr name="inactiveMarkerColor" format="color"/>
     <attr name="markerTopSpacing" format="dimension"/>
-    <attr name="animationDuration" format="integer"/>
+    <attr name="stepInAnimationDuration" format="integer"/>
+    <attr name="stepOutAnimationDuration" format="integer"/>
   </declare-styleable>
 </resources>

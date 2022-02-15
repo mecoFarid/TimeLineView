@@ -14,7 +14,8 @@ import android.view.animation.LinearInterpolator
 import androidx.core.animation.doOnEnd
 
 private const val LINE_STROKE = 5f
-private const val ANIMATION_DURATION =  250
+private const val STEP_IN_ANIMATION_DURATION =  50
+private const val STEP_OUT_ANIMATION_DURATION =  250
 private const val MARKER_START_SPACING = 100f
 private const val INACTIVE_MARKER_INNER_RADIUS = 15f
 private const val ACTIVE_MARKER_INNER_RADIUS = 15f
@@ -23,7 +24,6 @@ private const val ACTIVE_MARKER_RING_INNER_RADIUS = 25f
 class TimelineView(
   context: Context,
   attrs: AttributeSet?,
-
 ) : View(context, attrs) {
 
   private val activeLinePaint = Paint(ANTI_ALIAS_FLAG)
@@ -40,7 +40,8 @@ class TimelineView(
   private var viewLength: Float = 0f
   private var animationEnded = false
   private var markerStartSpacing = MARKER_START_SPACING
-  private var animationDuration = ANIMATION_DURATION
+  private var stepInAnimationDuration = STEP_IN_ANIMATION_DURATION
+  private var stepOutAnimationDuration = STEP_OUT_ANIMATION_DURATION
 
   // Active marker
   private val activeMarkerCenter = lazy { PointF(horizontalCenter, markerStartSpacing + activeMarkerRingInnerRadius) }
@@ -54,6 +55,8 @@ class TimelineView(
   private var inactiveMarkerColor = Color.GRAY
   private var inactiveMarkerInnerRadius = INACTIVE_MARKER_INNER_RADIUS
   private var inactiveMarkerRingStroke: Float = LINE_STROKE
+
+  private lateinit var onAnimationEndBlock: () -> Unit
 
   init {
     val styleSet = context.obtainStyledAttributes(attrs, R.styleable.TimelineView)
@@ -101,10 +104,12 @@ class TimelineView(
   }
 
   private fun initAnimationValues(styleSet: TypedArray){
-    animationDuration = styleSet.getInteger(R.styleable.TimelineView_animationDuration, ANIMATION_DURATION)
+    stepInAnimationDuration = styleSet.getInteger(R.styleable.TimelineView_stepInAnimationDuration, STEP_IN_ANIMATION_DURATION)
+    stepOutAnimationDuration = styleSet.getInteger(R.styleable.TimelineView_stepOutAnimationDuration, STEP_OUT_ANIMATION_DURATION)
   }
 
-  fun setState(state: State) {
+  fun setState(state: State, onAnimationEndBlock: () -> Unit = {}) {
+    this.onAnimationEndBlock = onAnimationEndBlock
     this.state = state
     restartAnimation()
   }
@@ -131,7 +136,10 @@ class TimelineView(
 
     getValueAnimator().apply {
       addUpdateListener { activeLineEndPoint = it.animatedValue as Float }
-      doOnEnd { animationEnded = true }
+      doOnEnd {
+        onAnimationEndBlock()
+        animationEnded = true
+      }
       duration = getAnimationDuration()
       interpolator = LinearInterpolator()
     }.start()
@@ -139,9 +147,9 @@ class TimelineView(
 
   private fun getAnimationDuration(): Long =
     when (state) {
+      State.STEP_IN -> stepInAnimationDuration.toLong()
+      State.STEP_OUT -> stepOutAnimationDuration.toLong()
       State.INACTIVE,
-      State.STEP_IN,
-      State.STEP_OUT -> animationDuration.toLong()
       State.STEP_IN_FINISHED,
       State.STEP_OUT_FINISHED -> 0
     }
@@ -297,7 +305,9 @@ class TimelineView(
     STEP_IN,
     STEP_OUT,
     STEP_IN_FINISHED,
-    STEP_OUT_FINISHED,
+    STEP_OUT_FINISHED,;
+
+    fun isStepInState(): Boolean = this == STEP_IN || this == STEP_IN_FINISHED
   }
 
   enum class Type {

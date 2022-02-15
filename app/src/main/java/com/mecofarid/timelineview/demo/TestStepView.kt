@@ -1,9 +1,9 @@
 package com.mecofarid.timelineview.demo
 
-import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import com.mecofarid.timelineview.TimelineView
 import com.mecofarid.timelineview.demo.databinding.DemoTestStepTimelineBinding
 
 abstract class TestStepView<T: TestStep, VB: ViewBinding, VH: TestStepView.TestStepViewHolder<T, VB>>(
@@ -12,11 +12,15 @@ abstract class TestStepView<T: TestStep, VB: ViewBinding, VH: TestStepView.TestS
   abstract fun getViewType(): ViewType
   abstract fun newViewHolder(parent: ViewGroup): VH
   abstract class TestStepViewHolder<T : TestStep, VB : ViewBinding>(
-    private val bindingHolder: BindingHolder<VB>
+    protected val bindingHolder: BindingHolder<VB>
   ) : RecyclerView.ViewHolder(bindingHolder.vb.root) {
     open fun bind(t: T) {
-      bindingHolder.timelineBinding.timeline.setType(t.pair.first)
-      bindingHolder.timelineBinding.timeline.setState(t.pair.second)
+      bindingHolder.timelineBinding.timeline.setType(t.type)
+      updateState(t.state)
+    }
+
+    open fun updateState(state: TimelineView.State, onAnimationEndBlock: () -> Unit = {}){
+      bindingHolder.timelineBinding.timeline.setState(state, onAnimationEndBlock)
     }
   }
 
@@ -33,4 +37,8 @@ abstract class TestStepView<T: TestStep, VB: ViewBinding, VH: TestStepView.TestS
     val vb: VB,
     val timelineBinding: DemoTestStepTimelineBinding
   )
+
+  enum class Payload{
+    UPDATE_STEP_STATE
+  }
 }
