@@ -13,7 +13,7 @@ abstract class TestStep(
       state = TimelineView.State.STEP_OUT_FINISHED
   }
 
-  fun isInOutState() = state ==
+  fun isStepOutState() = state ==
       TimelineView.State.STEP_OUT
       || state == TimelineView.State.STEP_OUT_FINISHED
 
@@ -26,3 +26,7 @@ abstract class TestStep(
       state = TimelineView.State.STEP_OUT
   }
 }
+
+internal fun TimelineView.State.isStepInState(): Boolean =
+  this == TimelineView.State.STEP_IN
+      || this == TimelineView.State.STEP_IN_FINISHED

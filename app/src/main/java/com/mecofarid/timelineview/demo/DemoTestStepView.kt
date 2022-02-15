@@ -12,7 +12,7 @@ class DemoTestStepView(
 
   override fun getViewType(): ViewType = ViewType.DEMO_TEST_VIEW
 
-  override fun newViewHolder(parent: ViewGroup): TestStepViewHolder{
+  override fun newViewHolder(parent: ViewGroup): TestStepViewHolder {
     val demoTestStepBinding = DemoTestStepViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     val timelineBinding = demoTestStepBinding.demoTestStepTimeline
 

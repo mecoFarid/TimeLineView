@@ -20,7 +20,7 @@ class MainActivity : AppCompatActivity() {
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
 
-    val middleCount = 6
+    val middleCount = 12
     val typeStatePairList = mutableListOf<Pair<TimelineView.Type, TimelineView.State>>()
     typeStatePairList.add(Pair(TimelineView.Type.START, TimelineView.State.INACTIVE))
     for (i in 1..middleCount){
@@ -28,20 +28,15 @@ class MainActivity : AppCompatActivity() {
     }
     typeStatePairList.add(Pair(TimelineView.Type.END, TimelineView.State.INACTIVE))
 
-
     val itemViewList = mutableListOf<TestStepView<*, * ,*>>()
     typeStatePairList.forEach {
       itemViewList.add(DemoTestStepView(DemoTestStep(type = it.first, state = it.second)))
     }
-
-
     val adapter = TestStepAdapter(itemViewList)
-
     var position = 0
     binding.fab.setOnClickListener {
       if (position < middleCount + 2)
         adapter.stepIn(position)
-      binding.timeline.smoothSnapToPosition(position)
       position++
     }
 
@@ -49,14 +44,5 @@ class MainActivity : AppCompatActivity() {
       it.adapter = adapter
       it.itemAnimator = null
     }
-  }
-
-  private fun RecyclerView.smoothSnapToPosition(position: Int) {
-    val smoothScroller = object : LinearSmoothScroller(this.context) {
-      override fun getVerticalSnapPreference(): Int = SNAP_TO_START
-      override fun calculateTimeForScrolling(dx: Int): Int = 250
-    }
-    smoothScroller.targetPosition = position
-    layoutManager?.startSmoothScroll(smoothScroller)
   }
 }

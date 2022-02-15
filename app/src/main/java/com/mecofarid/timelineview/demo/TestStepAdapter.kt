@@ -1,9 +1,7 @@
 package com.mecofarid.timelineview.demo
 
-import android.util.Log
-import android.view.MotionEvent
 import android.view.ViewGroup
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.mecofarid.timelineview.TimelineView
@@ -13,30 +11,42 @@ class TestStepAdapter(
 ): RecyclerView.Adapter<TestStepView.TestStepViewHolder<TestStep, ViewBinding>>() {
   private val typeItemViewMap = mutableMapOf<TestStepView.ViewType, TestStepView<*, *, *>>()
 
-  lateinit var recyclerView: RecyclerView
+  private lateinit var recyclerView: RecyclerView
+  private val scrollListener = object : RecyclerView.OnScrollListener() {
+    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+      super.onScrolled(recyclerView, dx, dy)
+      // If scrolling down, force scroll to last stepped-in position
+      if (dy > 0){
+        recyclerView.smoothSnapToPosition(findLastSteppedPosition())
+      }
+    }
+  }
+
+  fun stepIn(position: Int){
+    var positionToBeUpdated = position
+    val targetStep = getItem(position)
+    targetStep.testStep.stepIn()
+    if (targetStep.testStep.type != TimelineView.Type.START){
+      positionToBeUpdated = position.dec()
+      getItem(positionToBeUpdated).testStep.stepOut()
+    }
+    notifyItemChanged(positionToBeUpdated, TestStepView.Payload.UPDATE_STEP_STATE)
+    recyclerView.smoothSnapToPosition(positionToBeUpdated)
+  }
+
   override fun onAttachedToRecyclerView(recyclerView: RecyclerView) {
     super.onAttachedToRecyclerView(recyclerView)
     this.recyclerView = recyclerView
+    recyclerView.addOnScrollListener(scrollListener)
+  }
 
-
-    var previousY = 0f
-    var scrollingUp = false
-    recyclerView.addOnItemTouchListener(object : RecyclerView.SimpleOnItemTouchListener() {
-      override fun onInterceptTouchEvent(rv: RecyclerView, e: MotionEvent): Boolean {
-        Log.d("TAG", "onInterceptTouchEvent: po t ${e.y} <= $previousY")
-        scrollingUp = previousY <= e.y + 5
-        previousY = e.y
-
-        return super.onInterceptTouchEvent(rv, e)
+  private fun findLastSteppedPosition() : Int{
+    itemViewList.forEachIndexed { index, testStepView ->
+      if (testStepView.testStep.state.isStepInState()){
+        return index
       }
-    })
-
-//    recyclerView.layoutManager = object : LinearLayoutManager(recyclerView.context) {
-//      override fun canScrollVertically(): Boolean {
-//        Log.d("TAG", "onInterceptTouchEvent: scroll $scrollingUp")
-//        return scrollingUp
-//      }
-//    }
+    }
+    return 0
   }
 
   override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TestStepView.TestStepViewHolder<TestStep, ViewBinding> =
@@ -68,7 +78,7 @@ class TestStepAdapter(
       state = currentStep.state,
       onAnimationEndBlock = {
         finishStepAt(adapterPosition)
-        if (currentStep.isInOutState())
+        if (currentStep.isStepOutState())
           notifyNextStep(adapterPosition)
       }
     )
@@ -91,18 +101,6 @@ class TestStepAdapter(
     notifyItemChanged(nextPosition, TestStepView.Payload.UPDATE_STEP_STATE)
   }
 
-  fun stepIn(position: Int){
-    var positionToBeUpdated = position
-    val targetStep = getItem(position)
-    targetStep.testStep.stepIn()
-    if (targetStep.testStep.type != TimelineView.Type.START){
-      positionToBeUpdated = position.dec()
-      getItem(positionToBeUpdated).testStep.stepOut()
-    }
-    notifyItemChanged(positionToBeUpdated, TestStepView.Payload.UPDATE_STEP_STATE)
-    recyclerView.smoothScrollToPosition(positionToBeUpdated)
-  }
-
   private fun getItem(position: Int) = itemViewList[position]
 
   override fun getItemViewType(position: Int): Int {
@@ -113,4 +111,15 @@ class TestStepAdapter(
   }
 
   override fun getItemCount(): Int = itemViewList.size
+
+  private fun RecyclerView.smoothSnapToPosition(position: Int) {
+    val smoothScroller = object : LinearSmoothScroller(this.context) {
+      override fun getVerticalSnapPreference(): Int = SNAP_TO_START
+      override fun calculateTimeForScrolling(dx: Int): Int = 250
+    }
+    smoothScroller.targetPosition = position
+    removeOnScrollListener(scrollListener)
+    layoutManager?.startSmoothScroll(smoothScroller)
+    addOnScrollListener(scrollListener)
+  }
 }

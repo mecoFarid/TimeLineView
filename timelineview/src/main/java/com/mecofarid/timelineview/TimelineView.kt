@@ -305,9 +305,7 @@ class TimelineView(
     STEP_IN,
     STEP_OUT,
     STEP_IN_FINISHED,
-    STEP_OUT_FINISHED,;
-
-    fun isStepInState(): Boolean = this == STEP_IN || this == STEP_IN_FINISHED
+    STEP_OUT_FINISHED
   }
 
   enum class Type {
