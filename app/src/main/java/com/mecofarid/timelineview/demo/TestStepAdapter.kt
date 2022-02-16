@@ -1,5 +1,6 @@
 package com.mecofarid.timelineview.demo
 
+import android.util.Log
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
@@ -60,16 +61,14 @@ class TestStepAdapter(
   }
 
   override fun onBindViewHolder(holderTestStep: TestStepView.TestStepViewHolder<TestStep, ViewBinding>, position: Int) =
-    with(getItem(position).testStep) {
-      holderTestStep.bind(this)
-    }
+    holderTestStep.bind(getItem(position).testStep)
 
   override fun onBindViewHolder(holder: TestStepView.TestStepViewHolder<TestStep, ViewBinding>, position: Int, payloads: List<Any>) {
-    if (payloads.contains(TestStepView.Payload.UPDATE_STEP_STATE)){
-      updateState(holder)
-    } else{
+    // Bind whole view only if it is triggered by system
+    if (!payloads.contains(TestStepView.Payload.UPDATE_STEP_STATE))
       onBindViewHolder(holder, position)
-    }
+
+    updateState(holder)
   }
 
   private fun updateState(holder: TestStepView.TestStepViewHolder<TestStep, ViewBinding>) = with(holder) {
