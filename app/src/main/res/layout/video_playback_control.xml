@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+ xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:background="#79000000">
+
+  <ImageButton
+    android:id="@id/exo_rew"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/fast_rewind"
+    android:layout_alignParentStart="true"
+    android:layout_centerVertical="true"/>
+
+  <ImageButton android:id="@id/exo_play"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/play"
+    android:layout_centerInParent="true"/>
+
+  <ImageButton android:id="@id/exo_pause"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/stop"
+    android:layout_centerInParent="true"/>
+
+  <ImageButton
+    android:id="@id/exo_ffwd"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:src="@drawable/fast_forward"
+    android:layout_alignParentEnd="true"
+    android:layout_centerVertical="true"/>
+
+</RelativeLayout>

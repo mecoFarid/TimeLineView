@@ -118,10 +118,31 @@ class TimelineView(
     this.type = type
   }
 
+//  override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
+//    super.onMeasure(widthMeasureSpec, heightMeasureSpec)
+//    //Width measurements of the width and height and the inside view of child controls
+//    val w: Int = getMarkerOuterDiameter().toInt()+ /*mMarkerSize +*/ paddingLeft + paddingRight
+//    val h: Int = getMarkerOuterDiameter().toInt()+/*mMarkerSize +*/ paddingTop + paddingBottom
+//
+//    // Width and height to determine the final view through a systematic approach to decision-making
+//    val widthSize = resolveSizeAndState(w, widthMeasureSpec, 0)
+//    val heightSize = resolveSizeAndState(h, heightMeasureSpec, 0)
+//    setMeasuredDimension(widthSize, heightSize)
+//    val width = measuredWidth // Width of current custom view
+//
+//    val height = measuredHeight
+//
+//    println("KORT $width $height")
+//    invalidate()
+////    initTimeline()
+//  }
+
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
+    super.onSizeChanged(w, h, oldw, oldh)
     viewLength = h.toFloat()
     horizontalCenter = w / 2f
     startAnimation()
+    println("KORT $width $height")
   }
 
   private fun restartAnimation(){

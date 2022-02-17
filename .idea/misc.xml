@@ -3,12 +3,21 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="../../.gradle/caches/transforms-3/a0dc2dfef6f2823711651e62183d5978/transformed/jetified-exoplayer-ui-2.16.1/res/layout/exo_player_control_view.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.20092592592592592" />
         <entry key="app/src/main/res/drawable/content_finished_overlay.xml" value="0.21574074074074073" />
+        <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.20092592592592592" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.11854103343465046" />
+        <entry key="app/src/main/res/layout/activity_video.xml" value="0.1983695652173913" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.11854103343465046" />
         <entry key="app/src/main/res/layout/demo_test_step_timeline.xml" value="0.20923913043478262" />
         <entry key="app/src/main/res/layout/demo_test_step_view.xml" value="0.22192028985507245" />
+        <entry key="app/src/main/res/layout/test_step_timeline.xml" value="0.1983695652173913" />
         <entry key="app/src/main/res/layout/test_step_view.xml" value="0.20742753623188406" />
+        <entry key="app/src/main/res/layout/text_test_step_view.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/video_playback_control.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/video_step_view.xml" value="0.1983695652173913" />
+        <entry key="app/src/main/res/layout/video_test_step.xml" value="0.1983695652173913" />
       </map>
     </option>
   </component>

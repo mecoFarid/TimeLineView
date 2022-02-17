@@ -1,16 +1,19 @@
 package com.mecofarid.timelineview.demo
 
 import android.util.Log
+import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import com.mecofarid.timelineview.TimelineView
+import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
+import com.mecofarid.timelineview.demo.databinding.TextTestStepViewBinding
 
 class TestStepAdapter(
-  private val itemViewList: List<TestStepView<*, * ,*>>
-): RecyclerView.Adapter<TestStepView.TestStepViewHolder<TestStep, ViewBinding>>() {
-  private val typeItemViewMap = mutableMapOf<TestStepView.ViewType, TestStepView<*, *, *>>()
+  private val itemViewList: List<TestStepView<*,*>>
+): RecyclerView.Adapter<TestStepView.TestStepViewHolder<TestStep>>() {
+  private val typeItemViewMap = mutableMapOf<TestStepView.ViewType, TestStepView<*, *>>()
 
   private lateinit var recyclerView: RecyclerView
   private val scrollListener = object : RecyclerView.OnScrollListener() {
@@ -50,20 +53,21 @@ class TestStepAdapter(
     return 0
   }
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TestStepView.TestStepViewHolder<TestStep, ViewBinding> =
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TestStepView.TestStepViewHolder<TestStep> =
     with(TestStepView.ViewType.toViewType(viewType)) {
-      typeItemViewMap.getValue(this).newViewHolder(parent) as TestStepView.TestStepViewHolder<TestStep, ViewBinding>
+      val testStepViewBinding = TestStepViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+      typeItemViewMap.getValue(this).newViewHolder(testStepViewBinding) as TestStepView.TestStepViewHolder<TestStep>
     }
 
-  override fun onViewRecycled(holder: TestStepView.TestStepViewHolder<TestStep, ViewBinding>) {
+  override fun onViewRecycled(holder: TestStepView.TestStepViewHolder<TestStep>) {
     super.onViewRecycled(holder)
     finishStepAt(holder.adapterPosition)
   }
 
-  override fun onBindViewHolder(holderTestStep: TestStepView.TestStepViewHolder<TestStep, ViewBinding>, position: Int) =
+  override fun onBindViewHolder(holderTestStep: TestStepView.TestStepViewHolder<TestStep>, position: Int) =
     holderTestStep.bind(getItem(position).testStep)
 
-  override fun onBindViewHolder(holder: TestStepView.TestStepViewHolder<TestStep, ViewBinding>, position: Int, payloads: List<Any>) {
+  override fun onBindViewHolder(holder: TestStepView.TestStepViewHolder<TestStep>, position: Int, payloads: List<Any>) {
     // Bind whole view only if it is triggered by system
     if (!payloads.contains(TestStepView.Payload.UPDATE_STEP_STATE))
       onBindViewHolder(holder, position)
@@ -71,7 +75,7 @@ class TestStepAdapter(
     updateState(holder)
   }
 
-  private fun updateState(holder: TestStepView.TestStepViewHolder<TestStep, ViewBinding>) = with(holder) {
+  private fun updateState(holder: TestStepView.TestStepViewHolder<TestStep>) = with(holder) {
     val currentStep = getItem(adapterPosition).testStep
     updateState(
       state = currentStep.state,

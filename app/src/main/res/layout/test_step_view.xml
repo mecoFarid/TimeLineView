@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="wrap_content"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <com.mecofarid.timelineview.TimelineView
+    android:id="@+id/timeline"
+    android:layout_width="30dp"
+    android:layout_height="0dp"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintBottom_toBottomOf="parent"
+    app:layout_constraintStart_toStartOf="parent"
+    app:activeLineColor="#0089CA"
+    app:activeMarkerColor="#0089CA"
+    app:activeMarkerInnerRadius="4dp"
+    app:activeMarkerRingInnerRadius="7dp"
+    app:activeMarkerRingStroke="2dp"
+    app:inActiveLineColor="#E3E4E4"
+    app:inactiveMarkerColor="#E3E4E4"
+    app:inactiveMarkerInnerRadius="6dp"
+    app:inactiveMarkerRingStroke="2dp"
+    app:lineStroke="2dp"
+    app:markerTopSpacing="40dp"
+    app:stepInAnimationDuration="50"
+    app:stepOutAnimationDuration="250" />
+
+  <androidx.cardview.widget.CardView
+    android:id="@+id/content_holder"
+    android:layout_width="0dp"
+    android:layout_height="wrap_content"
+    app:layout_constraintTop_toTopOf="parent"
+    app:layout_constraintStart_toEndOf="@id/timeline"
+    app:layout_constraintEnd_toEndOf="parent"
+    android:layout_marginStart="0dp"
+    android:layout_marginTop="16dp"
+    android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
+    android:layout_toEndOf="@id/timeline"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="4dp"
+    app:cardUseCompatPadding="true">
+
+    <ViewStub
+      android:id="@+id/content"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent" />
+
+  </androidx.cardview.widget.CardView>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

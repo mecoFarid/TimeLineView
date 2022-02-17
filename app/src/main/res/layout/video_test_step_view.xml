@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="300dp"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
+
+  <androidx.constraintlayout.widget.ConstraintLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_constraintTop_toTopOf="parent">
+
+    <com.google.android.exoplayer2.ui.PlayerView
+      android:id="@+id/video"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      app:controller_layout_id="@layout/video_playback_control"
+      app:show_timeout="3000"
+      android:animateLayoutChanges="true"
+      app:auto_show="false"
+      app:resize_mode="zoom"
+      android:visibility="gone"/>
+
+    <ImageView
+      android:id="@+id/thumbnail"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:scaleType="center"
+      android:src="@drawable/ic_launcher_background"/>
+
+  </androidx.constraintlayout.widget.ConstraintLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

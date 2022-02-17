@@ -1,14 +1,10 @@
 package com.mecofarid.timelineview.demo
 
 import android.os.Bundle
-import android.util.DisplayMetrics
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.LinearSmoothScroller
-import androidx.recyclerview.widget.RecyclerView
 import com.mecofarid.timelineview.TimelineView
 import com.mecofarid.timelineview.demo.databinding.ActivityMainBinding
+import kotlin.random.Random
 
 class MainActivity : AppCompatActivity() {
 
@@ -28,9 +24,12 @@ class MainActivity : AppCompatActivity() {
     }
     typeStatePairList.add(Pair(TimelineView.Type.END, TimelineView.State.INACTIVE))
 
-    val itemViewList = mutableListOf<TestStepView<*, * ,*>>()
+    val itemViewList = mutableListOf<TestStepView<*,*>>()
     typeStatePairList.forEach {
-      itemViewList.add(DemoTestStepView(DemoTestStep(type = it.first, state = it.second)))
+      if (Random.nextBoolean())
+      itemViewList.add(TextTestStepView(TextTestStep(type = it.first, state = it.second)))
+      else
+        itemViewList.add(VideoTestStepView(VideoTestStep(type = it.first, state = it.second)))
     }
     val adapter = TestStepAdapter(itemViewList)
     var position = 0
