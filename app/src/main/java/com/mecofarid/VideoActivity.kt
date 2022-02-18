@@ -32,6 +32,10 @@ class VideoActivity : AppCompatActivity() {
     binding.start.setOnClickListener {
       loadVideo()
     }
+
+    binding.remove.setOnClickListener{
+      removeListener()
+    }
 //    setUpControllers()
   }
 
@@ -41,20 +45,29 @@ class VideoActivity : AppCompatActivity() {
     }
   }
 
+  private val listener = object: Player.Listener {
+    override fun onPlaybackStateChanged(playbackState: Int) {
+      super.onPlaybackStateChanged(playbackState)
+      Log.d("TAG", "onPlaybackStateChanged: $playbackState")
+      player.play()
+      binding.thumbnail.isVisible = false
+    }
+  }
+
   private fun loadVideo() {
     player.apply {
+
+      removeListener(listener)
       binding.video.player = this
       val mediaItem: MediaItem = MediaItem.fromUri(uri)
       setMediaItem(mediaItem)
       prepare()
-      addListener(object: Player.Listener {
-        override fun onPlaybackStateChanged(playbackState: Int) {
-          super.onPlaybackStateChanged(playbackState)
-          play()
-          binding.thumbnail.isVisible = false
-        }
-      })
+      addListener(listener)
     }
+  }
+
+  private fun removeListener(){
+    player.removeListener(listener)
   }
 
 //  private fun setUpControllers() {

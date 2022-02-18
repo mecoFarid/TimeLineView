@@ -26,7 +26,7 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
     open fun bind(t: T) {
       testStepViewBinding.timeline.setType(t.type)
       // TODO: Remove this
-      updateState(t.state)
+//      updateState(t.state)
     }
 
     open fun updateState(state: TimelineView.State, onAnimationEndBlock: () -> Unit = {}) {
@@ -34,11 +34,11 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
         timeline.setState(state, onAnimationEndBlock)
 
         contentHolder.apply {
-          val overlay =
-            if (state.isStepInState())
-              null
-            else
-              ContextCompat.getDrawable(context, R.drawable.content_finished_overlay)
+//          val overlay =
+//            if (state.isStepInState())
+//              null
+//            else
+//              ContextCompat.getDrawable(context, R.drawable.content_finished_overlay)
 
           // TODO: Resolve Magic numbers
           val elevation =
@@ -47,7 +47,7 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
             else
               0f
 
-          foreground = overlay
+//          foreground = overlay
           cardElevation = elevation
         }
       }

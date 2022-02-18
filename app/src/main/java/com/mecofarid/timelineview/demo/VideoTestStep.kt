@@ -4,5 +4,7 @@ import com.mecofarid.timelineview.TimelineView
 
 class VideoTestStep(
   type: TimelineView.Type,
-  state: TimelineView.State
+  override var state: TimelineView.State,
+  val videoPath: String,
+  var currentVideoPosition: Int = 0
 ) : TestStep(type, state)

@@ -3,18 +3,21 @@ package com.mecofarid.timelineview.demo
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
+import com.google.android.exoplayer2.ExoPlayer
 import com.mecofarid.timelineview.TimelineView
 import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
-import com.mecofarid.timelineview.demo.databinding.TextTestStepViewBinding
+
+internal const val SEEK_INCREMENT = 5_000L
+internal const val RECYCLERVIEW_CACHE_SIZE = 2 // Same as RecyclerView.Recycler.DEFAULT_CACHE_SIZE
 
 class TestStepAdapter(
-  private val itemViewList: List<TestStepView<*,*>>
+  private val itemViewList: List<TestStepView<*,*>>,
+  internal val player: Lazy<ExoPlayer>
 ): RecyclerView.Adapter<TestStepView.TestStepViewHolder<TestStep>>() {
   private val typeItemViewMap = mutableMapOf<TestStepView.ViewType, TestStepView<*, *>>()
-
   private lateinit var recyclerView: RecyclerView
   private val scrollListener = object : RecyclerView.OnScrollListener() {
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -23,6 +26,22 @@ class TestStepAdapter(
       if (dy > 0){
         recyclerView.smoothSnapToPosition(findLastSteppedPosition())
       }
+
+      stopVideoPlayerIfLastSteppedInStepNotVisible()
+    }
+  }
+
+  private fun stopVideoPlayerIfLastSteppedInStepNotVisible(){
+    val lastSteppedPosition = findLastSteppedPosition()
+    Log.d("TAG", "stopVideoPlayerIfLastSteppedInStepNotVisible: topper $lastSteppedPosition ${getItem(lastSteppedPosition)}")
+    if (getItem(lastSteppedPosition) !is VideoTestStepView)
+        return
+
+    (recyclerView.layoutManager as LinearLayoutManager).apply {
+      val firstBoundItemPosition = findFirstVisibleItemPosition() - RECYCLERVIEW_CACHE_SIZE
+      val lastBoundItemPosition = findLastVisibleItemPosition() + RECYCLERVIEW_CACHE_SIZE
+      if (lastSteppedPosition < firstBoundItemPosition || lastSteppedPosition > lastBoundItemPosition)
+        player.value.stop()
     }
   }
 
@@ -44,6 +63,8 @@ class TestStepAdapter(
     recyclerView.addOnScrollListener(scrollListener)
   }
 
+
+
   private fun findLastSteppedPosition() : Int{
     itemViewList.forEachIndexed { index, testStepView ->
       if (testStepView.testStep.state.isStepInState()){
@@ -61,7 +82,14 @@ class TestStepAdapter(
 
   override fun onViewRecycled(holder: TestStepView.TestStepViewHolder<TestStep>) {
     super.onViewRecycled(holder)
-    finishStepAt(holder.adapterPosition)
+    finishStepAt(holder.bindingAdapterPosition)
+    removePlayerListener(holder)
+  }
+
+  private fun removePlayerListener(holder: TestStepView.TestStepViewHolder<*>){
+    // Remove video listener
+    if (holder is VideoTestStepView.ViewHolder)
+      holder.removeListener()
   }
 
   override fun onBindViewHolder(holderTestStep: TestStepView.TestStepViewHolder<TestStep>, position: Int) =
@@ -76,13 +104,13 @@ class TestStepAdapter(
   }
 
   private fun updateState(holder: TestStepView.TestStepViewHolder<TestStep>) = with(holder) {
-    val currentStep = getItem(adapterPosition).testStep
+    val currentStep = getItem(bindingAdapterPosition).testStep
     updateState(
       state = currentStep.state,
       onAnimationEndBlock = {
-        finishStepAt(adapterPosition)
+        finishStepAt(bindingAdapterPosition)
         if (currentStep.isStepOutState())
-          notifyNextStep(adapterPosition)
+          notifyNextStep(bindingAdapterPosition)
       }
     )
   }
