@@ -16,7 +16,9 @@ class MainActivity : AppCompatActivity() {
     ExoPlayer.Builder(this)
       .setSeekBackIncrementMs(SEEK_INCREMENT)
       .setSeekForwardIncrementMs(SEEK_INCREMENT)
-      .build()
+      .build().apply {
+        playWhenReady = false
+      }
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -35,7 +37,7 @@ class MainActivity : AppCompatActivity() {
 
     val itemViewList = mutableListOf<TestStepView<*,*>>()
     typeStatePairList.forEach {
-      if (false)
+      if (Random.nextBoolean())
       itemViewList.add(TextTestStepView(TextTestStep(type = it.first, state = it.second)))
       else
         itemViewList.add(VideoTestStepView(

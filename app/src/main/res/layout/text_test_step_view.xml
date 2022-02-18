@@ -6,8 +6,16 @@
 
   <TextView
     android:layout_width="match_parent"
-    android:layout_height="200dp"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/step_view_text_content_padding"
     app:layout_constraintTop_toTopOf="parent"
-    android:text="Some text"/>
+    android:text="Some text
+    \nYou can omit this in review
+    \nNow new line
+    \nAnd one more
+    \nLast one
+    \nWill need more text here
+    \nPeriod"
+    android:textStyle="bold"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

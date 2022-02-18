@@ -7,6 +7,9 @@
         <entry key="app/src/main/res/drawable-v24/ic_launcher_foreground.xml" value="0.20092592592592592" />
         <entry key="app/src/main/res/drawable/content_finished_overlay.xml" value="0.21574074074074073" />
         <entry key="app/src/main/res/drawable/ic_launcher_background.xml" value="0.20092592592592592" />
+        <entry key="app/src/main/res/drawable/ic_pause.xml" value="0.2222222222222222" />
+        <entry key="app/src/main/res/drawable/ic_play.xml" value="0.2222222222222222" />
+        <entry key="app/src/main/res/drawable/ic_rewind.xml" value="0.2222222222222222" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.11854103343465046" />
         <entry key="app/src/main/res/layout/activity_video.xml" value="0.1983695652173913" />
         <entry key="app/src/main/res/layout/content_main.xml" value="0.11854103343465046" />

@@ -1,6 +1,5 @@
 package com.mecofarid.timelineview.demo
 
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -33,7 +32,6 @@ class TestStepAdapter(
 
   private fun stopVideoPlayerIfLastSteppedInStepNotVisible(){
     val lastSteppedPosition = findLastSteppedPosition()
-    Log.d("TAG", "stopVideoPlayerIfLastSteppedInStepNotVisible: topper $lastSteppedPosition ${getItem(lastSteppedPosition)}")
     if (getItem(lastSteppedPosition) !is VideoTestStepView)
         return
 
@@ -62,8 +60,6 @@ class TestStepAdapter(
     this.recyclerView = recyclerView
     recyclerView.addOnScrollListener(scrollListener)
   }
-
-
 
   private fun findLastSteppedPosition() : Int{
     itemViewList.forEachIndexed { index, testStepView ->
@@ -105,14 +101,11 @@ class TestStepAdapter(
 
   private fun updateState(holder: TestStepView.TestStepViewHolder<TestStep>) = with(holder) {
     val currentStep = getItem(bindingAdapterPosition).testStep
-    updateState(
-      state = currentStep.state,
-      onAnimationEndBlock = {
-        finishStepAt(bindingAdapterPosition)
-        if (currentStep.isStepOutState())
-          notifyNextStep(bindingAdapterPosition)
-      }
-    )
+    updateState {
+      finishStepAt(bindingAdapterPosition)
+      if (currentStep.state.isStepOutState())
+        notifyNextStep(bindingAdapterPosition)
+    }
   }
 
   private fun finishStepAt(position: Int){

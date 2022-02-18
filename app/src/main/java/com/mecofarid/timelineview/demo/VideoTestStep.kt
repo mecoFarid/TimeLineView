@@ -6,5 +6,5 @@ class VideoTestStep(
   type: TimelineView.Type,
   override var state: TimelineView.State,
   val videoPath: String,
-  var currentVideoPosition: Int = 0
+  var videoEnded: Boolean = false
 ) : TestStep(type, state)

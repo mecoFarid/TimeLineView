@@ -3,8 +3,6 @@ package com.mecofarid.timelineview.demo
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import androidx.viewbinding.ViewBinding
-import com.mecofarid.timelineview.TimelineView
 import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
 
 abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>(
@@ -16,38 +14,39 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
     private val testStepViewBinding: TestStepViewBinding
   ) : RecyclerView.ViewHolder(testStepViewBinding.root) {
     abstract fun getContentLayoutRes(): Int
-    protected fun bindContentLayout(testStepViewBinding: TestStepViewBinding) :View {
+    protected fun bindContentLayout(testStepViewBinding: TestStepViewBinding): View {
       testStepViewBinding.content.apply {
         layoutResource = getContentLayoutRes()
         return inflate()
       }
     }
 
+    protected lateinit var step: T
     open fun bind(t: T) {
+      step = t
       testStepViewBinding.timeline.setType(t.type)
-      // TODO: Remove this
-//      updateState(t.state)
     }
 
-    open fun updateState(state: TimelineView.State, onAnimationEndBlock: () -> Unit = {}) {
+    open fun updateState(onAnimationEndBlock: () -> Unit = {}) {
       testStepViewBinding.apply {
+        val state = step.state
         timeline.setState(state, onAnimationEndBlock)
 
+        // Update container elevation and overlay
         contentHolder.apply {
-//          val overlay =
-//            if (state.isStepInState())
-//              null
-//            else
-//              ContextCompat.getDrawable(context, R.drawable.content_finished_overlay)
+          val overlay =
+            if (state.isStepInState())
+              null
+            else
+              ContextCompat.getDrawable(context, R.color.color_step_view_overlay)
 
-          // TODO: Resolve Magic numbers
           val elevation =
             if (state.isStepInState())
-              12f
+              context.resources.getDimension(R.dimen.step_view_content_elevation)
             else
               0f
 
-//          foreground = overlay
+          foreground = overlay
           cardElevation = elevation
         }
       }

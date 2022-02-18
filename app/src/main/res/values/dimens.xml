@@ -1,3 +1,11 @@
 <resources>
-  <dimen name="fab_margin">16dp</dimen>
+  <dimen name="step_view_video_controller_button_dimens">48dp</dimen>
+  <dimen name="step_view_video_controller_replay_button_width">28dp</dimen>
+  <dimen name="step_view_video_controller_replay_button_height">32dp</dimen>
+  <dimen name="step_view_video_seek_button_horizontal_spacing">40dp</dimen>
+  <dimen name="step_view_content_elevation">4dp</dimen>
+  <dimen name="step_view_text_content_padding">16dp</dimen>
+  <dimen name="step_view_replay_button_text_horizontal_spacing">12dp</dimen>
+  <dimen name="step_view_replay_button_vertical_spacing">42dp</dimen>
+  <dimen name="text_24">24sp</dimen>
 </resources>

@@ -48,7 +48,6 @@ class VideoActivity : AppCompatActivity() {
   private val listener = object: Player.Listener {
     override fun onPlaybackStateChanged(playbackState: Int) {
       super.onPlaybackStateChanged(playbackState)
-      Log.d("TAG", "onPlaybackStateChanged: $playbackState")
       player.play()
       binding.thumbnail.isVisible = false
     }
