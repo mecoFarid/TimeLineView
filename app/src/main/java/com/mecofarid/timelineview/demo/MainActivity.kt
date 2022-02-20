@@ -16,10 +16,9 @@ class MainActivity : AppCompatActivity() {
     ExoPlayer.Builder(this)
       .setSeekBackIncrementMs(SEEK_INCREMENT)
       .setSeekForwardIncrementMs(SEEK_INCREMENT)
-      .build().apply {
-        playWhenReady = false
-      }
+      .build()
   }
+
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -38,17 +37,20 @@ class MainActivity : AppCompatActivity() {
     val itemViewList = mutableListOf<TestStepView<*,*>>()
     typeStatePairList.forEach {
       if (Random.nextBoolean())
-      itemViewList.add(TextTestStepView(TextTestStep(type = it.first, state = it.second)))
+        itemViewList.add(TextTestStepView(TextTestStep(type = it.first, state = it.second)))
       else
-        itemViewList.add(VideoTestStepView(
-          VideoTestStep(
-            type = it.first,
-            state = it.second,
-            videoPath = "android.resource://$packageName/${R.raw.video}"
-          ))
+        itemViewList.add(
+          VideoTestStepView(
+            testStep = VideoTestStep(
+              type = it.first,
+              state = it.second,
+              videoPath = "android.resource://$packageName/${R.raw.video}"
+            ),
+            player
+          )
         )
     }
-    val adapter = TestStepAdapter(itemViewList, player)
+    val adapter = TestStepAdapter(context = this, itemViewList, player)
     var position = 0
     binding.fab.setOnClickListener {
       if (position < middleCount + 2)

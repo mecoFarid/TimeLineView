@@ -1,21 +1,23 @@
 package com.mecofarid.timelineview.demo
 
 import android.net.Uri
-import android.util.Log
+import android.view.Surface
+import android.view.ViewGroup
 import androidx.core.view.isVisible
+import androidx.recyclerview.widget.LinearLayoutManager
 import com.bumptech.glide.Glide
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Player.STATE_ENDED
 import com.google.android.exoplayer2.ui.PlayerView
-import com.mecofarid.timelineview.TimelineView
 import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
 import com.mecofarid.timelineview.demo.databinding.VideoPlaybackControlBinding
 import com.mecofarid.timelineview.demo.databinding.VideoTestStepViewBinding
 
 class VideoTestStepView(
-  testStep: VideoTestStep
+  testStep: VideoTestStep,
+  private val player: Lazy<Player>
 ) : TestStepView<VideoTestStep, VideoTestStepView.ViewHolder>(testStep) {
 
   override fun getViewType(): ViewType = ViewType.VIDEO_TEST_VIEW
@@ -23,11 +25,16 @@ class VideoTestStepView(
   override fun newViewHolder(testStepViewBinding: TestStepViewBinding): ViewHolder =
     ViewHolder(testStepViewBinding)
 
-  class ViewHolder(testStepViewBinding: TestStepViewBinding) : TestStepViewHolder<VideoTestStep>(testStepViewBinding) {
+  override fun steppedInViewOutsideBoundArea() {
+    player.value.stop()
+  }
+
+  class ViewHolder(testStepViewBinding: TestStepViewBinding) : TestStepView.TestStepViewHolder<VideoTestStep>(testStepViewBinding) {
 
     private val binding = VideoTestStepViewBinding.bind(bindContentLayout(testStepViewBinding))
     private val controllerBinding = VideoPlaybackControlBinding.bind(binding.root)
     private lateinit var player: Lazy<ExoPlayer>
+    private lateinit var adapter: TestStepAdapter
     private lateinit var uri: Uri
     private val playerListener = object : Player.Listener {
       override fun onPlaybackStateChanged(playbackState: Int) {
@@ -40,26 +47,24 @@ class VideoTestStepView(
       binding.apply {
         thumbnail.isVisible = false
         video.isVisible = true
-        Log.d("TAG", "handlePlayBackState: ${playbackState}")
         if (step.videoEnded) {
-          video.displayControllers()
+          video.stopVideoAndDisplayControllers()
         }else{
-          Log.d("TAG", "handlePlayBackState: rot  ${step.videoEnded}")
           video.start(playbackState)
         }
+        updateMainAndReplyControllerVisibility()
       }
     }
 
     private fun PlayerView.start(playbackState: Int){
-      Log.d("TAG", "handlePlayBackState:")
       this@ViewHolder.player.value.play()
       step.videoEnded = playbackState == STATE_ENDED
-      toggleControllerVisibility(showMainControllers = !step.videoEnded)
       if (step.videoEnded)
-        displayControllers()
+        stopVideoAndDisplayControllers()
     }
 
-    private fun PlayerView.displayControllers(){
+    private fun PlayerView.stopVideoAndDisplayControllers(){
+      this@ViewHolder.player.value.stop()
       keepControllersOn(showIndefinitely = true)
       showController()
     }
@@ -68,9 +73,10 @@ class VideoTestStepView(
 
     override fun bind(t: VideoTestStep) {
       super.bind(t)
+      adapter = bindingAdapter as TestStepAdapter
       step = t
       uri = Uri.parse(t.videoPath)
-      player = (bindingAdapter as TestStepAdapter).player
+      player = adapter.player
       stopPlayerAndShowThumbnail()
       setupReplayButton()
     }
@@ -78,7 +84,7 @@ class VideoTestStepView(
     override fun updateState(onAnimationEndBlock: () -> Unit) {
       super.updateState(onAnimationEndBlock)
       removeListener()
-      if (step.state.isStepInState()) {
+      if (step.state.isAnyStepInState()) {
         startPlayerAndHideThumbNail()
       } else {
         stopPlayerAndShowThumbnail()
@@ -89,8 +95,17 @@ class VideoTestStepView(
       player.value.removeListener(playerListener)
     }
 
-    private fun startPlayerAndHideThumbNail(){
+    private fun startPlayerAndHideThumbNail() {
       player.value.apply {
+        // Problem with ExoPlayer while switching target SurfaceView's:
+        // Sometimes view will show black screen.
+        // Suggested solution says to use PlayerVIew.switchTargetView() but Recyclerview holder
+        // doesn't have reference to previous holder.
+        // https://github.com/google/ExoPlayer/issues/677
+        (binding.video.parent as ViewGroup).apply {
+          removeView(binding.video)
+          addView(binding.video)
+        }
         binding.video.player = this
         setMediaItem(MediaItem.fromUri(uri))
         addListener(playerListener)
@@ -99,7 +114,7 @@ class VideoTestStepView(
     }
 
     private fun stopPlayerAndShowThumbnail() = with(step.state) {
-      if (isStepOutState())
+      if (isAnyStepOutState())
         player.value.stop()
 
       binding.video.player = null
@@ -110,17 +125,18 @@ class VideoTestStepView(
       }
     }
 
-    private fun toggleControllerVisibility(showMainControllers: Boolean){
-      controllerBinding.mainController.isVisible = showMainControllers
-      controllerBinding.replay.isVisible = !showMainControllers
+    private fun updateMainAndReplyControllerVisibility(){
+      controllerBinding.replay.isVisible = step.videoEnded
+      controllerBinding.mainController.isVisible = !step.videoEnded
     }
 
     private fun setupReplayButton(){
       controllerBinding.replay.setOnClickListener {
         player.value.apply {
+          step.videoEnded = false
           binding.video.keepControllersOn(showIndefinitely = false)
-          play()
           seekTo(0)
+          prepare()
         }
       }
     }

@@ -22,8 +22,8 @@
     app:inactiveMarkerRingStroke="2dp"
     app:lineStroke="2dp"
     app:markerTopSpacing="40dp"
-    app:stepInAnimationDuration="50"
-    app:stepOutAnimationDuration="250" />
+    app:stepInAnimationDuration="@integer/test_step_view_step_in_animation"
+    app:stepOutAnimationDuration="@integer/test_step_view_step_out_animation" />
 
   <androidx.cardview.widget.CardView
     android:id="@+id/content_holder"

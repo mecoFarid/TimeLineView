@@ -10,6 +10,10 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
 ) {
   abstract fun getViewType(): ViewType
   abstract fun newViewHolder(testStepViewBinding: TestStepViewBinding): VH
+  open fun steppedInViewOutsideBoundArea(){
+    // Finish current step
+    testStep.finishState()
+  }
   abstract class TestStepViewHolder<T : TestStep>(
     private val testStepViewBinding: TestStepViewBinding
   ) : RecyclerView.ViewHolder(testStepViewBinding.root) {
@@ -35,13 +39,13 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
         // Update container elevation and overlay
         contentHolder.apply {
           val overlay =
-            if (state.isStepInState())
+            if (state.isAnyStepInState())
               null
             else
               ContextCompat.getDrawable(context, R.color.color_step_view_overlay)
 
           val elevation =
-            if (state.isStepInState())
+            if (state.isAnyStepInState())
               context.resources.getDimension(R.dimen.step_view_content_elevation)
             else
               0f
