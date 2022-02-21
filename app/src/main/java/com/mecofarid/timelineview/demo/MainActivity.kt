@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
 
     val itemViewList = mutableListOf<TestStepView<*,*>>()
     typeStatePairList.forEach {
-      if (Random.nextBoolean())
+      if (false)
         itemViewList.add(TextTestStepView(TextTestStep(type = it.first, state = it.second)))
       else
         itemViewList.add(

@@ -102,7 +102,6 @@ class TestStepAdapter(
     if (!payloads.contains(TestStepView.Payload.UPDATE_STEP_STATE))
       onBindViewHolder(holder, position)
 
-    Log.d("TAG", "bind: tohher down ${holder.bindingAdapterPosition} $payloads")
     updateState(holder)
   }
 
