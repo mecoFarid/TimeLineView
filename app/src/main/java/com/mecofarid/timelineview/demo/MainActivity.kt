@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
             testStep = VideoTestStep(
               type = it.first,
               state = it.second,
-              videoPath = "android.resource://$packageName/${R.raw.video}"
+              videoPath = "file:///android_asset/video.mp4"
             ),
             player
           )

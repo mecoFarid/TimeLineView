@@ -23,7 +23,7 @@ class VideoActivity : AppCompatActivity() {
       .setSeekForwardIncrementMs(5_000)
       .build()
   }
-  private val uri by lazy { Uri.parse("android.resource://$packageName/${R.raw.video}") }
+  private val uri by lazy { Uri.parse("asset:///video.mp4") }
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
     binding = ActivityVideoBinding.inflate(layoutInflater)

@@ -98,6 +98,7 @@ class TestStepAdapter(
     holderTestStep.bind(getItem(position).testStep)
 
   override fun onBindViewHolder(holder: TestStepView.TestStepViewHolder<TestStep>, position: Int, payloads: List<Any>) {
+    Log.d("TAG", "onBindViewHolder: ${holder.bindingAdapterPosition} $payloads")
     // Bind whole view only if it is triggered by system
     if (!payloads.contains(TestStepView.Payload.UPDATE_STEP_STATE))
       onBindViewHolder(holder, position)

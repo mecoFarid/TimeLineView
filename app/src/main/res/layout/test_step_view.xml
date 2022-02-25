@@ -6,8 +6,10 @@
 
   <com.mecofarid.timelineview.TimelineView
     android:id="@+id/timeline"
-    android:layout_width="30dp"
+    android:layout_width="16dp"
     android:layout_height="0dp"
+    android:layout_marginStart="30dp"
+    android:layout_marginEnd="50dp"
     app:layout_constraintTop_toTopOf="parent"
     app:layout_constraintBottom_toBottomOf="parent"
     app:layout_constraintStart_toStartOf="parent"
