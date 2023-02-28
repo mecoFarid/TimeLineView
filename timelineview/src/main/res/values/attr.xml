@@ -3,7 +3,7 @@
   <declare-styleable name="TimelineView">
     <attr name="lineStroke" format="dimension"/>
     <attr name="activeLineColor" format="color"/>
-    <attr name="inActiveLineColor" format="color"/>
+    <attr name="inactiveLineColor" format="color"/>
     <attr name="activeMarkerColor" format="color"/>
     <attr name="activeMarkerInnerRadius" format="dimension"/>
     <attr name="activeMarkerRingInnerRadius" format="dimension"/>

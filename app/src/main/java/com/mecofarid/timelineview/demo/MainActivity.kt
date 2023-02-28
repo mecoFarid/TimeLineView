@@ -1,12 +1,15 @@
 package com.mecofarid.timelineview.demo
 
-import android.net.Uri
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.exoplayer2.ExoPlayer
 import com.mecofarid.timelineview.TimelineView
 import com.mecofarid.timelineview.demo.databinding.ActivityMainBinding
-import kotlin.random.Random
+import com.mecofarid.timelineview.demo.step.RECYCLERVIEW_CACHE_SIZE
+import com.mecofarid.timelineview.demo.step.StepView
+import com.mecofarid.timelineview.demo.step.TestStepAdapter
+import com.mecofarid.timelineview.demo.step.VideoStepView
+import com.mecofarid.timelineview.demo.step.VideoTestStep
 
 class MainActivity : AppCompatActivity() {
 
@@ -14,11 +17,8 @@ class MainActivity : AppCompatActivity() {
 
   private val player: Lazy<ExoPlayer> = lazy {
     ExoPlayer.Builder(this)
-      .setSeekBackIncrementMs(SEEK_INCREMENT)
-      .setSeekForwardIncrementMs(SEEK_INCREMENT)
       .build()
   }
-
 
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(savedInstanceState)
@@ -26,35 +26,18 @@ class MainActivity : AppCompatActivity() {
     binding = ActivityMainBinding.inflate(layoutInflater)
     setContentView(binding.root)
 
-    val middleCount = 12
-    val typeStatePairList = mutableListOf<Pair<TimelineView.Type, TimelineView.State>>()
-    typeStatePairList.add(Pair(TimelineView.Type.START, TimelineView.State.INACTIVE))
-    for (i in 1..middleCount){
-      typeStatePairList.add(Pair(TimelineView.Type.MIDDLE, TimelineView.State.INACTIVE))
-    }
-    typeStatePairList.add(Pair(TimelineView.Type.END, TimelineView.State.INACTIVE))
+    setupSteps()
+  }
 
-    val itemViewList = mutableListOf<TestStepView<*,*>>()
-    typeStatePairList.forEach {
-      if (false)
-        itemViewList.add(TextTestStepView(TextTestStep(type = it.first, state = it.second)))
-      else
-        itemViewList.add(
-          VideoTestStepView(
-            testStep = VideoTestStep(
-              type = it.first,
-              state = it.second,
-              videoPath = "file:///android_asset/video.mp4"
-            ),
-            player
-          )
-        )
-    }
+  private fun setupSteps(){
+    val itemViewList = createSteps()
     val adapter = TestStepAdapter(context = this, itemViewList, player)
     var position = 0
     binding.fab.setOnClickListener {
-      if (position < middleCount + 2)
-        adapter.stepIn(position)
+      if (position > itemViewList.lastIndex)
+        return@setOnClickListener
+
+      adapter.stepIn(position)
       position++
     }
 
@@ -63,6 +46,31 @@ class MainActivity : AppCompatActivity() {
       it.itemAnimator = null
       it.setItemViewCacheSize(RECYCLERVIEW_CACHE_SIZE)
     }
+  }
+
+  private fun createSteps(): List<StepView<*, *>> {
+    val middleCount = 12
+    val typeStatePairList = mutableListOf<Pair<TimelineView.Type, TimelineView.State>>()
+    typeStatePairList.add(Pair(TimelineView.Type.START, TimelineView.State.INACTIVE))
+    for (i in 1..middleCount){
+      typeStatePairList.add(Pair(TimelineView.Type.MIDDLE, TimelineView.State.INACTIVE))
+    }
+    typeStatePairList.add(Pair(TimelineView.Type.END, TimelineView.State.INACTIVE))
+
+    val itemViewList = mutableListOf<StepView<*, *>>()
+    typeStatePairList.forEach {
+      itemViewList.add(
+        VideoStepView(
+          testStep = VideoTestStep(
+            type = it.first,
+            state = it.second,
+            videoPath = "file:///android_asset/video.mp4"
+          ),
+          player
+        )
+      )
+    }
+    return itemViewList
   }
 
   override fun onDestroy() {

@@ -10,8 +10,7 @@
     android:id="@+id/timeline"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-    tools:listitem="@layout/text_test_step_view"/>
+    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 
   <com.google.android.material.floatingactionbutton.FloatingActionButton
     android:id="@+id/fab"
@@ -19,6 +18,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="bottom|end"
     android:layout_marginBottom="16dp"
-    app:srcCompat="@android:drawable/ic_media_next" />
+    app:srcCompat="@drawable/ic_next"
+    app:tint="@android:color/white"/>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

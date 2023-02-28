@@ -1,4 +1,4 @@
-package com.mecofarid.timelineview.demo
+package com.mecofarid.timelineview.demo.step
 
 import com.mecofarid.timelineview.TimelineView
 

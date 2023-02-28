@@ -14,8 +14,8 @@ import android.view.animation.LinearInterpolator
 import androidx.core.animation.doOnEnd
 
 private const val LINE_STROKE = 5f
-private const val STEP_IN_ANIMATION_DURATION =  50
-private const val STEP_OUT_ANIMATION_DURATION =  250
+private const val STEP_IN_ANIMATION_DURATION = 50
+private const val STEP_OUT_ANIMATION_DURATION = 250
 private const val MARKER_START_SPACING = 100f
 private const val INACTIVE_MARKER_INNER_RADIUS = 15f
 private const val ACTIVE_MARKER_INNER_RADIUS = 15f
@@ -67,7 +67,7 @@ class TimelineView(
     styleSet.recycle()
   }
 
-  private fun initActiveLinePaint(styleSet: TypedArray){
+  private fun initActiveLinePaint(styleSet: TypedArray) {
     activeLinePaint.apply {
       strokeWidth = styleSet.getDimension(R.styleable.TimelineView_lineStroke, LINE_STROKE)
       style = Paint.Style.STROKE
@@ -75,35 +75,34 @@ class TimelineView(
     }
   }
 
-  private fun initInactiveLinePaint(styleSet: TypedArray){
+  private fun initInactiveLinePaint(styleSet: TypedArray) {
     inactiveLinePaint.apply {
       strokeWidth = styleSet.getDimension(R.styleable.TimelineView_lineStroke, LINE_STROKE)
       style = Paint.Style.STROKE
-      color = styleSet.getColor(R.styleable.TimelineView_inActiveLineColor, Color.GRAY)
+      color = styleSet.getColor(R.styleable.TimelineView_inactiveLineColor, Color.GRAY)
     }
   }
 
-  private fun initMarkers(styleSet: TypedArray){
+  private fun initMarkers(styleSet: TypedArray) {
     markerStartSpacing = styleSet.getDimension(R.styleable.TimelineView_markerTopSpacing, MARKER_START_SPACING)
     initActiveMarkerStyle(styleSet)
     initInactiveMarkerStyle(styleSet)
   }
 
-  private fun initActiveMarkerStyle(styleSet: TypedArray){
+  private fun initActiveMarkerStyle(styleSet: TypedArray) {
     activeMarkerColor = styleSet.getColor(R.styleable.TimelineView_activeMarkerColor, Color.BLUE)
     activeMarkerInnerRadius = styleSet.getDimension(R.styleable.TimelineView_activeMarkerInnerRadius, ACTIVE_MARKER_INNER_RADIUS)
     activeMarkerRingInnerRadius = styleSet.getDimension(R.styleable.TimelineView_activeMarkerRingInnerRadius, ACTIVE_MARKER_RING_INNER_RADIUS)
     activeMarkerRingStroke = styleSet.getDimension(R.styleable.TimelineView_activeMarkerRingStroke, LINE_STROKE)
-
   }
 
-  private fun initInactiveMarkerStyle(styleSet: TypedArray){
+  private fun initInactiveMarkerStyle(styleSet: TypedArray) {
     inactiveMarkerColor = styleSet.getColor(R.styleable.TimelineView_inactiveMarkerColor, Color.GRAY)
     inactiveMarkerInnerRadius = styleSet.getDimension(R.styleable.TimelineView_inactiveMarkerInnerRadius, INACTIVE_MARKER_INNER_RADIUS)
     inactiveMarkerRingStroke = styleSet.getDimension(R.styleable.TimelineView_inactiveMarkerRingStroke, LINE_STROKE)
   }
 
-  private fun initAnimationValues(styleSet: TypedArray){
+  private fun initAnimationValues(styleSet: TypedArray) {
     stepInAnimationDuration = styleSet.getInteger(R.styleable.TimelineView_stepInAnimationDuration, STEP_IN_ANIMATION_DURATION)
     stepOutAnimationDuration = styleSet.getInteger(R.styleable.TimelineView_stepOutAnimationDuration, STEP_OUT_ANIMATION_DURATION)
   }
@@ -125,13 +124,13 @@ class TimelineView(
     startAnimation()
   }
 
-  private fun restartAnimation(){
+  private fun restartAnimation() {
     animationEnded = false
     postInvalidateOnAnimation()
     startAnimation()
   }
 
-  private fun startAnimation(){
+  private fun startAnimation() {
     if (isInactiveState())
       return
 
@@ -223,7 +222,7 @@ class TimelineView(
     canvas.drawActiveState()
   }
 
-  private fun Canvas.drawActiveState(){
+  private fun Canvas.drawActiveState() {
     if (isInactiveState())
       return
 
@@ -232,7 +231,7 @@ class TimelineView(
       drawActiveStateMarker()
   }
 
-  private fun Canvas.drawInactiveState(){
+  private fun Canvas.drawInactiveState() {
     drawInactiveLine()
     if (!isActiveMarkerEnabled())
       drawInactiveStateMarker()

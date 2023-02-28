@@ -1,7 +1,6 @@
-package com.mecofarid.timelineview.demo
+package com.mecofarid.timelineview.demo.step
 
 import android.net.Uri
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
@@ -10,30 +9,27 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.google.android.exoplayer2.Player.STATE_ENDED
-import com.google.android.exoplayer2.Player.STATE_READY
-import com.google.android.exoplayer2.ui.PlayerView
-import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
-import com.mecofarid.timelineview.demo.databinding.VideoPlaybackControlBinding
-import com.mecofarid.timelineview.demo.databinding.VideoTestStepViewBinding
+import com.mecofarid.timelineview.demo.R
+import com.mecofarid.timelineview.demo.databinding.StepViewBinding
+import com.mecofarid.timelineview.demo.databinding.VideoStepViewBinding
 
-class VideoTestStepView(
+class VideoStepView(
   testStep: VideoTestStep,
   private val player: Lazy<Player>
-) : TestStepView<VideoTestStep, VideoTestStepView.ViewHolder>(testStep) {
+) : StepView<VideoTestStep, VideoStepView.ViewHolder>(testStep) {
 
   override fun getViewType(): ViewType = ViewType.VIDEO_TEST_VIEW
 
-  override fun newViewHolder(testStepViewBinding: TestStepViewBinding): ViewHolder =
-    ViewHolder(testStepViewBinding)
+  override fun newViewHolder(stepViewBinding: StepViewBinding): ViewHolder =
+    ViewHolder(stepViewBinding)
 
   override fun steppedInViewOutsideBoundArea() {
     player.value.stop()
   }
 
-  class ViewHolder(testStepViewBinding: TestStepViewBinding) : TestStepView.TestStepViewHolder<VideoTestStep>(testStepViewBinding) {
+  class ViewHolder(stepViewBinding: StepViewBinding) : TestStepViewHolder<VideoTestStep>(stepViewBinding) {
 
-    private val binding = VideoTestStepViewBinding.bind(bindContentLayout(testStepViewBinding))
-    private val controllerBinding = VideoPlaybackControlBinding.bind(binding.root)
+    private val binding = VideoStepViewBinding.bind(bindContentLayout(stepViewBinding))
     private lateinit var player: ExoPlayer
     private lateinit var uri: Uri
     private val playerListener = object : Player.Listener {
@@ -48,25 +44,22 @@ class VideoTestStepView(
         video.isVisible = true
         updateVideoSurfaceViewAndThumbnailVisibility()
         if (step.videoEnded) {
-          video.stopVideoAndDisplayControllers()
+          stopVideoAndDisplayControllers()
         } else {
-          video.start(playbackState)
+          start(playbackState)
         }
-        updateMainAndReplayControllerVisibility()
       }
     }
 
-    private fun PlayerView.start(playbackState: Int){
+    private fun start(playbackState: Int){
       this@ViewHolder.player.play()
       step.videoEnded = playbackState == STATE_ENDED
       if (step.videoEnded)
         stopVideoAndDisplayControllers()
     }
 
-    private fun PlayerView.stopVideoAndDisplayControllers(){
+    private fun stopVideoAndDisplayControllers(){
       this@ViewHolder.player.stop()
-      keepControllersOn(showIndefinitely = true)
-      showController()
     }
 
     private fun updateVideoSurfaceViewAndThumbnailVisibility() {
@@ -84,26 +77,12 @@ class VideoTestStepView(
       }
     }
 
-    private fun updateMainAndReplayControllerVisibility(){
-      controllerBinding.apply {
-        replay.isVisible = step.videoEnded
-        mainController.isVisible = !step.videoEnded
-      }
-    }
-
-    override fun getContentLayoutRes(): Int = R.layout.video_test_step_view
+    override fun getContentLayoutRes(): Int = R.layout.video_step_view
 
     override fun bind(t: VideoTestStep) {
       super.bind(t)
       step = t
       initPlayer()
-    }
-
-    private fun initPlayer(){
-      uri = Uri.parse(step.videoPath)
-      player = (bindingAdapter as TestStepAdapter).player.value
-      stopPlayerAndShowThumbnail()
-      setupReplayButton()
     }
 
     override fun updateState(onAnimationEndBlock: () -> Unit) {
@@ -118,6 +97,12 @@ class VideoTestStepView(
 
     fun removeListener(){
       player.removeListener(playerListener)
+    }
+
+    private fun initPlayer(){
+      uri = Uri.parse(step.videoPath)
+      player = (bindingAdapter as TestStepAdapter).player.value
+      stopPlayerAndShowThumbnail()
     }
 
     private fun startPlayerAndHideThumbNail() {
@@ -148,25 +133,6 @@ class VideoTestStepView(
         video.isVisible = false
         Glide.with(thumbnail).load(uri).into(thumbnail)
       }
-    }
-
-    private fun setupReplayButton(){
-      controllerBinding.replay.setOnClickListener {
-        player.apply {
-          step.videoEnded = false
-          binding.video.keepControllersOn(showIndefinitely = false)
-          seekTo(0)
-          prepare()
-        }
-      }
-    }
-    
-    private fun PlayerView.keepControllersOn(showIndefinitely: Boolean) {
-      controllerShowTimeoutMs =
-        if (showIndefinitely)
-          0
-        else
-          resources.getInteger(R.integer.test_step_view_controller_auto_hide_delay)
     }
   }
 }

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-  <integer name="test_step_view_controller_auto_hide_delay">3000</integer>
   <integer name="test_step_view_step_out_animation">300</integer>
   <integer name="test_step_view_step_in_animation">100</integer>
 </resources>

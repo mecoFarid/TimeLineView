@@ -2,69 +2,24 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
   android:layout_height="match_parent"
-  xmlns:app="http://schemas.android.com/apk/res-auto"
-  android:background="#79000000">
-
-  <androidx.appcompat.widget.LinearLayoutCompat
-    android:id="@+id/main_controller"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:gravity="center">
+    android:visibility="gone">
 
     <ImageView
       android:id="@id/exo_rew"
-      style="@style/Widget.Luminostics.VideoControllerButton"
-      android:src="@drawable/ic_rewind"
-      android:layout_marginEnd="@dimen/step_view_video_seek_button_horizontal_spacing"/>
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
-      android:id="@+id/play_pause_holder"
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content">
+    <ImageView android:id="@id/exo_play"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>
 
-      <ImageView android:id="@id/exo_play"
-        style="@style/Widget.Luminostics.VideoControllerButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/ic_play"
-        android:layout_centerInParent="true" />
-
-      <ImageView android:id="@id/exo_pause"
-        style="@style/Widget.Luminostics.VideoControllerButton"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        android:src="@drawable/ic_pause"
-        android:layout_centerInParent="true"/>
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
+    <ImageView android:id="@id/exo_pause"
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>
 
     <ImageView
       android:id="@id/exo_ffwd"
-      android:src="@drawable/ic_forward"
-      style="@style/Widget.Luminostics.VideoControllerButton"
-      android:layout_marginStart="@dimen/step_view_video_seek_button_horizontal_spacing"/>
-
-  </androidx.appcompat.widget.LinearLayoutCompat>
-
-  <androidx.appcompat.widget.LinearLayoutCompat
-    android:id="@+id/replay"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:gravity="center"
-    app:layout_constraintBottom_toBottomOf="parent"
-    android:layout_marginBottom="@dimen/step_view_replay_button_vertical_spacing">
-
-    <ImageView
-      style="@style/Widget.Luminostics.VideoControllerButton.Replay"
-      android:src="@drawable/ic_restart"/>
-
-    <TextView
-      android:layout_width="wrap_content"
-      android:layout_height="wrap_content"
-      style="@style/Widget.Luminostics.TextAppearance.ReplayVideo"
-      android:layout_marginStart="@dimen/step_view_replay_button_text_horizontal_spacing"
-      android:text="@string/ls_test_run_watch_again"/>
-
-  </androidx.appcompat.widget.LinearLayoutCompat>
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -1,25 +1,26 @@
-package com.mecofarid.timelineview.demo
+package com.mecofarid.timelineview.demo.step
 
 import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
-import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
+import com.mecofarid.timelineview.demo.R
+import com.mecofarid.timelineview.demo.databinding.StepViewBinding
 
-abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>(
+abstract class StepView<T: TestStep, VH: StepView.TestStepViewHolder<T>>(
   val testStep: T
 ) {
   abstract fun getViewType(): ViewType
-  abstract fun newViewHolder(testStepViewBinding: TestStepViewBinding): VH
+  abstract fun newViewHolder(stepViewBinding: StepViewBinding): VH
   open fun steppedInViewOutsideBoundArea(){
     // Finish current step
     testStep.finishState()
   }
   abstract class TestStepViewHolder<T : TestStep>(
-    private val testStepViewBinding: TestStepViewBinding
-  ) : RecyclerView.ViewHolder(testStepViewBinding.root) {
+    private val stepViewBinding: StepViewBinding
+  ) : RecyclerView.ViewHolder(stepViewBinding.root) {
     abstract fun getContentLayoutRes(): Int
-    protected fun bindContentLayout(testStepViewBinding: TestStepViewBinding): View {
-      testStepViewBinding.content.apply {
+    protected fun bindContentLayout(stepViewBinding: StepViewBinding): View {
+      stepViewBinding.content.apply {
         layoutResource = getContentLayoutRes()
         return inflate()
       }
@@ -28,11 +29,11 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
     protected lateinit var step: T
     open fun bind(t: T) {
       step = t
-      testStepViewBinding.timeline.setType(t.type)
+      stepViewBinding.timeline.setType(t.type)
     }
 
     open fun updateState(onAnimationEndBlock: () -> Unit = {}) {
-      testStepViewBinding.apply {
+      stepViewBinding.apply {
         val state = step.state
         timeline.setState(state, onAnimationEndBlock)
 
@@ -44,14 +45,7 @@ abstract class TestStepView<T: TestStep, VH: TestStepView.TestStepViewHolder<T>>
             else
               ContextCompat.getDrawable(context, R.color.color_step_view_overlay)
 
-          val elevation =
-            if (state.isAnyStepInState())
-              context.resources.getDimension(R.dimen.step_view_content_elevation)
-            else
-              0f
-
           foreground = overlay
-          cardElevation = elevation
         }
       }
     }

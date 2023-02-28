@@ -1,4 +1,4 @@
-package com.mecofarid.timelineview.demo
+package com.mecofarid.timelineview.demo.step
 
 import android.content.Context
 import android.os.Handler
@@ -10,17 +10,17 @@ import androidx.recyclerview.widget.LinearSmoothScroller
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.exoplayer2.ExoPlayer
 import com.mecofarid.timelineview.TimelineView
-import com.mecofarid.timelineview.demo.databinding.TestStepViewBinding
+import com.mecofarid.timelineview.demo.R
+import com.mecofarid.timelineview.demo.databinding.StepViewBinding
 
-internal const val SEEK_INCREMENT = 5_000L
-internal const val RECYCLERVIEW_CACHE_SIZE = 2 // Same as RecyclerView.Recycler.DEFAULT_CACHE_SIZE
+internal const val RECYCLERVIEW_CACHE_SIZE = 2
 
 class TestStepAdapter(
   private val context: Context,
-  private val itemViewList: List<TestStepView<*,*>>,
+  private val itemViewList: List<StepView<*, *>>,
   internal val player: Lazy<ExoPlayer>
-): RecyclerView.Adapter<TestStepView.TestStepViewHolder<TestStep>>() {
-  private val typeItemViewMap = mutableMapOf<TestStepView.ViewType, TestStepView<*, *>>()
+): RecyclerView.Adapter<StepView.TestStepViewHolder<TestStep>>() {
+  private val typeItemViewMap = mutableMapOf<StepView.ViewType, StepView<*, *>>()
   private lateinit var recyclerView: RecyclerView
   private val scrollListener = object : RecyclerView.OnScrollListener() {
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
@@ -58,7 +58,7 @@ class TestStepAdapter(
       positionToBeUpdated = position.dec()
       getItem(positionToBeUpdated).testStep.stepOut()
     }
-    notifyItemChanged(positionToBeUpdated, TestStepView.Payload.UPDATE_STEP_STATE)
+    notifyItemChanged(positionToBeUpdated, StepView.Payload.UPDATE_STEP_STATE)
     recyclerView.smoothSnapToPosition(positionToBeUpdated)
   }
 
@@ -77,36 +77,35 @@ class TestStepAdapter(
     return 0
   }
 
-  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TestStepView.TestStepViewHolder<TestStep> =
-    with(TestStepView.ViewType.toViewType(viewType)) {
-      val testStepViewBinding = TestStepViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
-      typeItemViewMap.getValue(this).newViewHolder(testStepViewBinding) as TestStepView.TestStepViewHolder<TestStep>
+  override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): StepView.TestStepViewHolder<TestStep> =
+    with(StepView.ViewType.toViewType(viewType)) {
+      val testStepViewBinding = StepViewBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+      typeItemViewMap.getValue(this).newViewHolder(testStepViewBinding) as StepView.TestStepViewHolder<TestStep>
     }
 
-  override fun onViewRecycled(holder: TestStepView.TestStepViewHolder<TestStep>) {
+  override fun onViewRecycled(holder: StepView.TestStepViewHolder<TestStep>) {
     super.onViewRecycled(holder)
     removePlayerListener(holder)
   }
 
-  private fun removePlayerListener(holder: TestStepView.TestStepViewHolder<*>){
+  private fun removePlayerListener(holder: StepView.TestStepViewHolder<*>){
     // Remove video listener
-    if (holder is VideoTestStepView.ViewHolder)
+    if (holder is VideoStepView.ViewHolder)
       holder.removeListener()
   }
 
-  override fun onBindViewHolder(holderTestStep: TestStepView.TestStepViewHolder<TestStep>, position: Int) =
+  override fun onBindViewHolder(holderTestStep: StepView.TestStepViewHolder<TestStep>, position: Int) =
     holderTestStep.bind(getItem(position).testStep)
 
-  override fun onBindViewHolder(holder: TestStepView.TestStepViewHolder<TestStep>, position: Int, payloads: List<Any>) {
-    Log.d("TAG", "onBindViewHolder: ${holder.bindingAdapterPosition} $payloads")
+  override fun onBindViewHolder(holder: StepView.TestStepViewHolder<TestStep>, position: Int, payloads: List<Any>) {
     // Bind whole view only if it is triggered by system
-    if (!payloads.contains(TestStepView.Payload.UPDATE_STEP_STATE))
+    if (!payloads.contains(StepView.Payload.UPDATE_STEP_STATE))
       onBindViewHolder(holder, position)
 
     updateState(holder)
   }
 
-  private fun updateState(holder: TestStepView.TestStepViewHolder<TestStep>) = with(holder) {
+  private fun updateState(holder: StepView.TestStepViewHolder<TestStep>) = with(holder) {
     val currentStep = getItem(bindingAdapterPosition).testStep
     updateState {
       if (currentStep.state.isStepOutState())
@@ -129,7 +128,7 @@ class TestStepAdapter(
       return
 
     // Update view
-    notifyItemChanged(nextPosition, TestStepView.Payload.UPDATE_STEP_STATE)
+    notifyItemChanged(nextPosition, StepView.Payload.UPDATE_STEP_STATE)
   }
 
   private fun getItem(position: Int) = itemViewList[position]
